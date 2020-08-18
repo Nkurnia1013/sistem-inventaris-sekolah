@@ -8,14 +8,12 @@ if (!isset($_GET['hal'])) {
 location.href = '?hal=Home';
 </script>";
 }
-if ($_GET['hal'] != 'Login' && $_GET['hal'] != 'Logout') {
+
+$out = ['Login', 'Logout'];
+if (!in_array($_GET['hal'], $out)) {
     if (!isset($Session['admin'])) {
-        echo "<script>
-alert('Anda belum login, silahkan login');
-</script>";
-        echo "<script>
-location.href = '?hal=Login';
-</script>";
+        echo "<script>alert('Anda belum login, silahkan login');</script>";
+        echo "<script>location.href = '?hal=Login';</script>";
     }
 }
 
@@ -24,5 +22,7 @@ $Controller = new Controller($_REQUEST);
 
 $komponen = 'views/Komponen';
 $data = $Controller->Data;
+$Request = json_decode(json_encode($_REQUEST));
+
 include 'views/html.php';
 /* Start to develop here. Best regards https://php-download.com/ */

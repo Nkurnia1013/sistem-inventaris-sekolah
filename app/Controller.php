@@ -37,11 +37,24 @@ class Controller
         if (isset($Request->login)) {
             $data['admin'] = collect($this->Crud->mysqli2->table('user')->select()->where('user', $Request->user)->where('pass', $Request->pass)->get());
             if ($data['admin']->isEmpty()) {
-                echo "<script>alert('Maaf, Username atau Password yang anda inputkan salah');</script>";
-                echo "<script>location.href = '?hal=Login';</script>";
-                die();
+
+                $data['admin'] = collect($this->Crud->mysqli2->table('guru')->select()->where('nip', $Request->user)->where('pass', $Request->pass)->get());
+                if ($data['admin']->isEmpty()) {
+                    echo "<script>alert('Maaf, Username atau Password yang anda inputkan salah');</script>";
+                    echo "<script>location.href = '?hal=Login';</script>";
+                    die();
+
+                } else {
+                    $_SESSION['admin'] = $data['admin']->first();
+                    $_SESSION['admin']->level = 'guru';
+                    echo "<script>alert('Berhasil');</script>";
+                    echo "<script>location.href = '?hal=Home';</script>";
+                    die();
+                }
+
             } else {
                 $_SESSION['admin'] = $data['admin']->first();
+
                 echo "<script>alert('Berhasil');</script>";
                 echo "<script>location.href = '?hal=Home';</script>";
                 die();
@@ -99,30 +112,211 @@ class Controller
 
         $this->Data = $data;
     }
-    public function Barang()
+    public function Permintaan()
     {
         $data = [
-            'judul' => 'Data Barang',
-            'path' => 'Master/Barang',
+            'judul' => 'Permintaan Barang',
+            'path' => 'Transaksi/Permintaan',
+            'induk' => 'Transaksi',
+            'link' => 'Permintaan',
+
+        ];
+        $Session = $_SESSION;
+        // $this->fields('permintaan');
+        $fields1 = '[
+               {"name":"tgl","label":"Tanggal","type":"date","max":null,"pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
+               {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"},
+               {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+               {"name":"qty","label":"Qty","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+               {"name":"ket","label":"Keterangan","type":"textarea","max":"100","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+                ]';
+        $data['transaksi.form'] = json_decode($fields1, true);
+
+        $data['guru'] = collect($this->Crud->mysqli2->table('guru')->select()->get());
+
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Ya')->get());
+        if ($Session['admin']->level == 'guru') {
+            $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->join('guru', 'guru.nip', '=', 'transaksi.nip')->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Keluar')->where('guru.nip', $Session['admin']->nip)->get());
+
+        } else {
+            $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->join('guru', 'guru.nip', '=', 'transaksi.nip')->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Keluar')->get());
+
+        }
+
+        $this->Data = $data;
+    }
+    public function Ruangan()
+    {
+        $data = [
+            'judul' => 'Data Ruangan',
+            'path' => 'Master/Ruangan',
             'induk' => 'Master',
-            'link' => 'Barang',
+            'link' => 'Ruangan',
+
+        ];
+        $fields1 = '[
+                {"name":"ruangan","label":"Ruangan","type":"text","max":"16","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true}
+                ]';
+        $data['ruangan'] = collect($this->Crud->mysqli2->table('ruangan')->select()->get());
+
+        $data['ruangan.form'] = json_decode($fields1, true);
+
+        $this->Data = $data;
+    }
+    public function LapAlokasi()
+    {
+        $data = [
+            'judul' => 'Kartu Inventaris Ruangan',
+            'path' => 'Laporan/LapAlokasi',
+            'induk' => 'Laporan Barang Tidak Habis Pakai',
+            'link' => 'LapAlokasi',
+            'Request' => $this->Request,
+
+        ];
+        //$this->fields('alokasi');
+        $tgl = date('Y-m-d');
+        $fields1 = '[
+                {"name":"nama_barang","label":"Nama Barang","type":"number","max":null,"pnj":12,"val":null,"red":"required","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"merk","label":"Merk","type":"number","max":null,"pnj":12,"val":null,"red":"required","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"ukuran","label":"Ukuran","type":"text","max":"30","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"bahan","label":"Bahan","type":"text","max":"30","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"jumlah","label":"jumlah","type":"number","max":null,"pnj":12,"val":null,"red":"required min=1","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"noPabrik","label":"No Pabrik","type":"text","max":"30","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"kondisi","label":"Kondisi Barang","type":"text","max":"20","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"}
+
+                ]';
+        $data['ruangan'] = collect($this->Crud->mysqli2->table('ruangan')->select()->get());
+
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Tidak')->get())->groupBy('kategori');
+        if (isset($this->Request->idruangan)) {
+            $data['idruangan'] = $this->Request->idruangan;
+            $data['alokasi'] = collect($this->Crud->mysqli2->table('alokasi')->select()->join('barang', 'barang.idbarang', '=', 'alokasi.idbarang')->where('idruangan', $data['idruangan'])->get());
+
+        }
+
+        $data['alokasi.form'] = json_decode($fields1, true);
+
+        $this->Data = $data;
+    }
+    public function Alokasi()
+    {
+        $data = [
+            'judul' => 'Alokasi Barang ke Ruangan',
+            'path' => 'Transaksi/Alokasi',
+            'induk' => 'Transaksi',
+            'link' => 'Alokasi',
+
+        ];
+        //$this->fields('alokasi');
+        $tgl = date('Y-m-d');
+        $fields1 = '[
+                {"name":"noPabrik","label":"No Pabrik","type":"text","max":"30","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"kondisi","label":"Kondisi Barang","type":"text","max":"20","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"idbarang","label":"Nama Barang","type":"number","max":null,"pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"},
+                {"name":"nama_barang","label":"Nama Barang","type":"number","max":null,"pnj":12,"val":null,"red":"required","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"merk","label":"Merk","type":"number","max":null,"pnj":12,"val":null,"red":"required","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"ukuran","label":"Ukuran","type":"text","max":"30","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"bahan","label":"Bahan","type":"text","max":"30","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"jumlah","label":"jumlah","type":"number","max":null,"pnj":12,"val":null,"red":"required min=1","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+                ]';
+        $data['ruangan'] = collect($this->Crud->mysqli2->table('ruangan')->select()->get());
+
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Tidak')->get());
+        if (isset($this->Request->idruangan)) {
+            $data['idruangan'] = $this->Request->idruangan;
+            $data['alokasi'] = collect($this->Crud->mysqli2->table('alokasi')->select()->join('barang', 'barang.idbarang', '=', 'alokasi.idbarang')->where('idruangan', $data['idruangan'])->get());
+
+        }
+
+        $data['alokasi.form'] = json_decode($fields1, true);
+
+        $this->Data = $data;
+    }
+    public function Guru()
+    {
+        $data = [
+            'judul' => 'Data Guru',
+            'path' => 'Master/Guru',
+            'induk' => 'Master',
+            'link' => 'Guru',
+
+        ];
+        $fields1 = '[
+                {"name":"nip","label":"NIP / UNPTK / NIK","type":"text","max":"16","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true},
+                {"name":"pass","label":"Password","type":"password","max":"16","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":false},
+                {"name":"nama","label":"Nama Lengkap","type":"text","max":"25","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true},
+                {"name":"alamat","label":"Alamat","type":"textarea","max":"100","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true},
+                {"name":"nohp","label":"No HP","type":"number","max":"12","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true}
+                ]';
+        $data['guru'] = collect($this->Crud->mysqli2->table('guru')->select()->get());
+
+        $data['guru.form'] = json_decode($fields1, true);
+
+        $this->Data = $data;
+    }
+    public function BarangHabis()
+    {
+        $data = [
+            'judul' => 'Data Barang Habis Pakai',
+            'path' => 'Master/BarangHabis',
+            'induk' => 'Barang',
+            'link' => 'BarangHabis',
         ];
         //$this->fields('barang');
         $fields1 = '[
-                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"deskripsi","label":"Deskripsi","type":"textarea","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+                {"name":"idbarang","label":"ID Barang","type":"text","max":"7","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
+
+                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"satuan","label":"Satuan","type":"text","max":"15","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
+                {"name":"deskripsi","label":"Deskripsi","type":"textarea","max":null,"pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"jatah","label":"Jatah Bulanan","type":"number","max":null,"pnj":12,"val":0,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+
+
                 ]';
         $data['barang.form'] = json_decode($fields1, true);
 
         $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->get());
 
-        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->get())->map(function ($item, $key) use ($data) {
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Ya')->get())->map(function ($item, $key) use ($data) {
             $ts = $data['transaksi']->where('idbarang', $item->idbarang);
-            $item->stok = $ts->where('jenis', 'Masuk')->sum('qty') - $ts->where('jenis', 'Keluar')->sum('qty');
+            $item->stok = $ts->where('jenis', 'Masuk')->sum('qty') - $ts->where('jenis', 'Keluar')->where('status', 'ACC')->sum('qty');
             return $item;
         });
+
+        $this->Data = $data;
+    }
+    public function BarangTak()
+    {
+        $data = [
+            'judul' => 'Data Barang Tidak Habis Pakai',
+            'path' => 'Master/BarangTak',
+            'induk' => 'Barang',
+            'link' => 'BarangTak',
+        ];
+        //$this->fields('barang');
+        $fields1 = '[
+                {"name":"idbarang","label":"ID Barang","type":"text","max":"7","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
+
+                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"ukuran","label":"Ukuran","type":"text","max":"30","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"bahan","label":"Bahan","type":"text","max":"30","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+                {"name":"deskripsi","label":"Deskripsi","type":"textarea","max":null,"pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+
+
+                ]';
+        $data['barang.form'] = json_decode($fields1, true);
+
+        $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->get());
+
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Tidak')->get());
 
         $this->Data = $data;
     }
@@ -141,7 +335,6 @@ class Controller
                {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"},
                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                 {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"qty","label":"Qty","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"ket","label":"Keterangan","type":"text","max":"100","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
                 ]';
@@ -153,24 +346,23 @@ class Controller
 
         }
         $data[$data['table']] = collect($this->Crud->mysqli2->table($data['table'])->select()->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Masuk')->where('tgl', $data['tgl'])->get());
-        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->get())->groupBy('kategori');
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Ya')->get());
 
         $this->Data = $data;
     }
     public function Keluar()
     {
         $data = [
-            'judul' => 'Data Barang Keluar',
+            'judul' => 'Pengambilan Barang',
             'path' => 'Transaksi/Keluar',
             'induk' => 'Transaksi',
             'link' => 'Keluar',
         ];
         //$this->fields('transaksi');
         $fields1 = '[
-               {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"},
+               {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                 {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"qty","label":"Qty","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"ket","label":"Keterangan","type":"text","max":"100","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
                 ]';
@@ -181,7 +373,9 @@ class Controller
             $data['tgl'] = $this->Request->tgl;
 
         }
-        $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Keluar')->where('tgl', $data['tgl'])->get());
+        $data['guru'] = collect($this->Crud->mysqli2->table('guru')->select()->get());
+
+        $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->join('guru', 'guru.nip', '=', 'transaksi.nip')->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Keluar')->where('tgl', $data['tgl'])->get());
         $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->get())->groupBy('kategori');
 
         $this->Data = $data;
@@ -191,21 +385,23 @@ class Controller
         $data = [
             'judul' => 'Laporan Inventaris',
             'path' => 'Laporan/Inventaris',
-            'induk' => 'Laporan',
+            'induk' => 'Laporan Barang Habis Pakai',
             'link' => 'Inventaris',
             'Request' => $this->Request,
         ];
         //$this->fields('transaksi');
         $fields1 = '[
+               {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
+
                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                 {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"deskripsi","label":"Deskripsi","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+                {"name":"deskripsi","label":"Deskripsi","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
                 ]';
         $data['barang.form'] = json_decode($fields1, true);
-        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->get());
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Ya')->get());
         if (isset($data['Request']->tgl)) {
-            $data['transaksi'] = $this->Crud->mysqli2->table('transaksi')->select(['*', new Ex('month(tgl) as bln'), new Ex('year(tgl) as thn')])->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where(new Ex('year(tgl)'), $data['Request']->tgl[1]);
+            $data['transaksi'] = $this->Crud->mysqli2->table('transaksi')->select([new Ex('*'), new Ex('month(tgl) as bln'), new Ex('year(tgl) as thn')])->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where(new Ex('year(tgl)'), $data['Request']->tgl[1]);
             if ($data['Request']->jenis == 'bulanan') {
                 $data['transaksi'] = $data['transaksi']->where(new Ex('month(tgl)'), $data['Request']->tgl[0]);
             }
@@ -219,23 +415,23 @@ class Controller
         $data = [
             'judul' => 'Laporan Barang Masuk',
             'path' => 'Laporan/LapMasuk',
-            'induk' => 'Laporan',
+            'induk' => 'Laporan Barang Habis Pakai',
             'link' => 'LapMasuk',
             'Request' => $this->Request,
         ];
         //$this->fields('transaksi');
         $fields1 = '[
-               {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"},
+                {"name":"idbarang","label":"ID Barang","type":"number","max":"7","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
 
                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                 {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"qty","label":"Qty","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"ket","label":"Keterangan","type":"text","max":"100","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
                 ]';
         $data['transaksi.form'] = json_decode($fields1, true);
         if (isset($data['Request']->tgl)) {
-            $data['transaksi'] = $this->Crud->mysqli2->table('transaksi')->select(['*', new Ex('month(tgl) as bln'), new Ex('year(tgl) as thn')])->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Masuk')->where(new Ex('year(tgl)'), $data['Request']->tgl[1]);
+            $data['transaksi'] = $this->Crud->mysqli2->table('transaksi')->select([new Ex('*'), new Ex('month(tgl) as bln'), new Ex('year(tgl) as thn')])->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Masuk')->where(new Ex('year(tgl)'), $data['Request']->tgl[1]);
             if ($data['Request']->jenis == 'bulanan') {
                 $data['transaksi'] = $data['transaksi']->where(new Ex('month(tgl)'), $data['Request']->tgl[0]);
             }
@@ -247,25 +443,26 @@ class Controller
     public function LapKeluar()
     {
         $data = [
-            'judul' => 'Laporan Barang Keluar',
+            'judul' => 'Laporan Pengambilan Barang',
             'path' => 'Laporan/LapKeluar',
-            'induk' => 'Laporan',
+            'induk' => 'Laporan Barang Habis Pakai',
             'link' => 'LapKeluar',
             'Request' => $this->Request,
         ];
         //$this->fields('transaksi');
         $fields1 = '[
-               {"name":"idbarang","label":"Barang","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":false,"var":"input[]","var2":"tb[]"},
+                {"name":"idbarang","label":"ID Barang","type":"number","max":"7","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
 
                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                 {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":false,"up":false,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"qty","label":"Qty","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+               {"name":"status","label":"Status","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                {"name":"ket","label":"Keterangan","type":"text","max":"100","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
                 ]';
         $data['transaksi.form'] = json_decode($fields1, true);
         if (isset($data['Request']->tgl)) {
-            $data['transaksi'] = $this->Crud->mysqli2->table('transaksi')->select(['*', new Ex('month(tgl) as bln'), new Ex('year(tgl) as thn')])->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->where('jenis', 'Keluar')->where(new Ex('year(tgl)'), $data['Request']->tgl[1]);
+            $data['transaksi'] = $this->Crud->mysqli2->table('transaksi')->select([new Ex('*'), new Ex('month(tgl) as bln'), new Ex('year(tgl) as thn')])->join('barang', 'barang.idbarang', '=', 'transaksi.idbarang')->join('guru', 'guru.nip', '=', 'transaksi.nip')->where('jenis', 'Keluar')->where(new Ex('year(tgl)'), $data['Request']->tgl[1]);
             if ($data['Request']->jenis == 'bulanan') {
                 $data['transaksi'] = $data['transaksi']->where(new Ex('month(tgl)'), $data['Request']->tgl[0]);
             }
@@ -279,23 +476,24 @@ class Controller
         $data = [
             'judul' => 'Laporan Stok',
             'path' => 'Laporan/Stok',
-            'induk' => 'Laporan',
+            'induk' => 'Laporan Barang Habis Pakai',
             'link' => 'Stok',
             'Request' => $this->Request,
         ];
         //$this->fields('transaksi');
         $fields1 = '[
+                {"name":"idbarang","label":"ID Barang","type":"number","max":"7","pnj":12,"val":null,"red":"required","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
+
                {"name":"merk","label":"Merk","type":"text","max":"15","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
                 {"name":"nama_barang","label":"Nama Barang","type":"text","max":"15","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"deskripsi","label":"Deskripsi","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"},
-                {"name":"kategori","label":"Kategori","type":"text","max":"25","pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
+                {"name":"deskripsi","label":"Deskripsi","type":"number","max":null,"pnj":12,"val":null,"red":"","input":true,"up":true,"tb":true,"var":"input[]","var2":"tb[]"}
                 ]';
         $data['barang.form'] = json_decode($fields1, true);
         $data['transaksi'] = collect($this->Crud->mysqli2->table('transaksi')->select()->get());
 
-        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->get())->map(function ($item, $key) use ($data) {
+        $data['barang'] = collect($this->Crud->mysqli2->table('barang')->select()->where('habisPakai', 'Ya')->get())->map(function ($item, $key) use ($data) {
             $ts = $data['transaksi']->where('idbarang', $item->idbarang);
-            $item->stok = $ts->where('jenis', 'Masuk')->sum('qty') - $ts->where('jenis', 'Keluar')->sum('qty');
+            $item->stok = $ts->where('jenis', 'Masuk')->sum('qty') - $ts->where('jenis', 'Keluar')->where('status', 'ACC')->sum('qty');
             return $item;
         });
 

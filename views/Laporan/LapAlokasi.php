@@ -1,6 +1,25 @@
 <div class="row " style="zoom:85%">
-    <?php include $komponen . '/Filter.php';?>
-    <?php if (isset($data['Request']->tgl)): ?>
+    <div class="form-grup col-12 mb-2 input-group-sm">
+        <form>
+            <label class="form-control-label">Pilih Ruangan</label>
+            <div class="input-group mb-3">
+                <select class="form-control" name="idruangan">
+                    <?php foreach ($data['ruangan'] as $e): ?>
+                    <option value="<?php echo $e->idruangan; ?>">
+                        <?php echo $e->ruangan; ?>
+                    </option>
+                    <?php endforeach;?>
+                </select>
+                <input type="hidden" name="hal" value="<?php echo $_REQUEST['hal']; ?>">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Set Ruangan</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <?php if (isset($data['Request']->idruangan)): ?>
+    <?php $data['table'] = 'alokasi';?>
+    <?php $data['primary'] = 'idalokasi';?>
     <div class="col-lg-12 col-12 mt-3">
         <div class="card" style="zoom:85%">
             <div class="card-header card-header-primary">
@@ -15,21 +34,25 @@
                     <div class="col-1"></div>
                     <div class="col-10">
                         <br>
-                        <h4 class="text-center"><b><u style="text-transform: uppercase;">Laporan Barang Masuk</u></b></h4>
-                        <p class="p-0 m-0"><strong>Pada
-                                <?php if ($data['Request']->jenis == 'bulanan'): ?>
-                                <?php echo Fungsi::$bulan[$data['Request']->tgl[0]]; ?>
-                                <?php endif;?>
-                                <?php echo $data['Request']->tgl[1]; ?></strong></strong></p>
-                                 <?php $table = 'transaksi';?>
-                                <?php $primary = 'idtransaksi';?>
+                        <h4 class="text-center"><b><u style="text-transform: uppercase;">kartu inventaris ruangan</u></b></h4>
+                        <br>
+                        <br>
+                        <br>
+                        <p class="p-0 m-0">
+                            <strong>
+                            <div class="d-flex">
+                                <span>Ruangan:</span>
+                                <span> <?php echo $data['ruangan']->where('idruangan', $Request->idruangan)->first()->ruangan; ?></span>
+                            </div>
+                            </strong>
+                        </p>
+                        <?php $table = 'transaksi';?>
+                        <?php $primary = 'idtransaksi';?>
                         <table width="100%" class="text-wrap mb-0  table table-bordered table-striped table-hover ">
                             <thead class="">
                                 <tr>
                                     <th class="w-1">No</th>
-                                    <th class="w-1">Tanggal</th>
-
-                                    <?php foreach ($data[$table . '.form'] as $e): ?>
+                                    <?php foreach ($data[$data['table'] . '.form'] as $e): ?>
                                     <?php if ($e['tb']): ?>
                                     <th class="">
                                         <?php echo $e['label']; ?>
@@ -39,16 +62,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-
-                                <?php foreach ($data[$table] as $v => $e): ?>
+                                <?php foreach ($data[$data['table']] as $v => $e): ?>
                                 <tr>
                                     <td>
                                         <?php echo $v + 1; ?>
                                     </td>
-                                    <td>
-                                        <?php echo date_format(date_create($e->tgl), 'd/m/Y'); ?>
-                                    </td>
-                                    <?php foreach ($data[$table . '.form'] as $e1): ?>
+                                    <?php foreach ($data[$data['table'] . '.form'] as $e1): ?>
                                     <?php if ($e1['tb']): ?>
                                     <td class="text-wrap">
                                         <?php $b = $e1['name'];?>

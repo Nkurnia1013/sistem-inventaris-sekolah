@@ -1,57 +1,38 @@
 <div class="row ">
-    <div class="form-grup col-12 mb-2 input-group-sm">
-        <form>
-        <label class="form-control-label">Tanggal Transaksi</label>
-        <div class="input-group mb-3">
-            <input type="date" class="form-control" value="<?php echo $data['tgl']; ?>" name="tgl" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-            <input type="hidden" name="hal" value="<?php echo $_REQUEST['hal']; ?>">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Set Tanggal</button>
-            </div>
-        </div>
-        </form>
-    </div>
-       <?php $table = 'transaksi';?>
-                    <?php $primary = 'idtransaksi';?>
+    <?php $table = 'transaksi';?>
+    <?php $primary = 'idtransaksi';?>
+    <?php if ($Session['admin']->level == 'guru'): ?>
     <div class="col-12 col-lg-3 mb-2">
         <div class="card rounded shadow" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Form Input</h6>
             <div class=" card-body ">
                 <form action="Action.php" method="post" enctype="multipart/form-data">
                     <div class="row">
-                        <div class="form-grup col-12 mb-2 input-group-sm">
-                            <label class="form-control-label">Guru</label>
-                            <select class="form-control " name="input[]">
-                               <?php foreach ($data['guru'] as $k => $e): ?>
-
-                                    <option value="<?php echo $e->nip; ?>">
-                                        <?php echo $e->nip; ?> ||
-                                        <?php echo $e->nama; ?>
-                                    </option>
-
-                                <?php endforeach;?>
-                            </select>
-                            <input type="hidden" name="tb[]" value="nip">
-
-                        </div>
                         <?php foreach ($data['transaksi.form'] as $isi): ?>
                         <?php if ($isi['name'] == 'idbarang'): ?>
                         <div class="form-grup col-12 mb-2 input-group-sm">
                             <label class="form-control-label">Barang</label>
-                            <select class="form-control " name="input[]">
-                                <?php foreach ($data['barang'] as $k => $v): ?>
-                                <optgroup label="<?php echo $k; ?>">
-                                    <?php foreach ($v as $e): ?>
-                                    <option value="<?php echo $e->idbarang; ?>">
-                                        <?php echo $e->nama_barang; ?> ||
-                                        <?php echo $e->merk; ?>
-                                    </option>
-                                    <?php endforeach;?>
-                                </optgroup>
+                            <select class="form-control " id="barang" onclick="$('#satuan').html($('#barang option:selected').data('satuan'))"  name="input[]">
+                                <?php foreach ($data['barang'] as $k => $e): ?>
+                                <option data-satuan="<?php echo $e->satuan; ?>" value="<?php echo $e->idbarang; ?>">
+                                    <?php echo $e->nama_barang; ?> ||
+                                    <?php echo $e->merk; ?>
+                                </option>
                                 <?php endforeach;?>
                             </select>
                             <input type="hidden" name="tb[]" value="idbarang">
-
+                        </div>
+                        <?php elseif ($isi['name'] == 'qty'): ?>
+                        <div class="form-grup col-12 mb-2 input-group-sm">
+                            <label class="form-control-label">
+                                <?php echo $isi['label']; ?></label>
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control" aria-describedby="satuan" name="input[]">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="satuan"></span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
                         </div>
                         <?php else: ?>
                         <?php include $komponen . '/Input.php';?>
@@ -60,12 +41,9 @@
                         <div class="modal-footer col-12  py-1">
                             <input type="hidden" name="input[]" value="Keluar">
                             <input type="hidden" name="tb[]" value="jenis">
-                            <input type="hidden" name="input[]" value="<?php echo $data['tgl']; ?>">
-
-                            <input type="hidden" name="tb[]" value="tgl">
+                            <input type="hidden" name="input[]" value="<?php echo $Session['admin']->nip; ?>">
+                            <input type="hidden" name="tb[]" value="nip">
                             <input type="hidden" name="cek" value="keluar">
-
-
                             <input type="hidden" name="table" value="<?php echo $table; ?>">
                             <button type="submit" name="aksi" value="insert" class="btn btn-sm btn-primary">Tambah</button>
                         </div>
@@ -74,16 +52,17 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-lg-9 mb-2">
+    <?php endif;?>
+    <div class="col mb-2">
         <div class="card rounded shadow" style="zoom:85%">
-            <h6 class="text-dark ml-2 mt-1 pt-1">Data <small><strong><small>
-                            <?php echo $data['tgl']; ?></small></strong></small></h6>
-
+            <h6 class="text-dark ml-2 mt-1 pt-1">Data </h6>
             <table width="100%" class="text-wrap mb-0 tb table table-borderless table-striped table-hover ">
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
+                        <?php if ($Session['admin']->level != 'guru'): ?>
                         <th>Oleh</th>
+                        <?php endif;?>
                         <?php foreach ($data[$table . '.form'] as $e): ?>
                         <?php if ($e['tb']): ?>
                         <th class="">
@@ -91,20 +70,24 @@
                         </th>
                         <?php endif;?>
                         <?php endforeach;?>
+                        <th>Status</th>
                         <th data-priority="1"></th>
                     </tr>
                 </thead>
                 <tbody>
-
                     <?php foreach ($data[$table] as $v => $e): ?>
                     <tr>
                         <td>
                             <?php echo $v + 1; ?>
                         </td>
+                        <?php if ($Session['admin']->level != 'guru'): ?>
                         <td>
                             <?php echo $e->nama; ?>
-                            <div>NIP:  <?php echo $e->nip; ?></div>
+                            <div>NIP:
+                                <?php echo $e->nip; ?>
+                            </div>
                         </td>
+                        <?php endif;?>
                         <?php foreach ($data[$table . '.form'] as $e1): ?>
                         <?php if ($e1['tb']): ?>
                         <td class="text-wrap">
@@ -113,15 +96,18 @@
                         </td>
                         <?php endif;?>
                         <?php endforeach;?>
+                        <td>
+                            <?php echo $e->status; ?>
+                        </td>
                         <td class="text-right ">
-                            <span style="display: none" id="data-<?php echo $e->$primary; ?>">
-                                <?php echo json_encode($e); ?></span>
-                            <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->$primary; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=<?php echo $table; ?>&primary=<?php echo $primary; ?>&key=<?php echo $e->$primary; ?>">
-                                <i class="fa fa-trash"></i>
-                            </a>
+                            <?php if ($Session['admin']->level == 'guru'): ?>
+                            <?php if (!in_array($e->status, ['Dibatalkan', 'ACC', 'Ditolak'])): ?>
+                            <a class="btn-sm btn-danger btn" href="Action.php?aksi=update&table=transaksi&primary=idtransaksi&key=<?php echo $e->idtransaksi; ?>&input[]=Dibatalkan&tb[]=status">Batalkan</a>
+                            <?php endif;?>
+                            <?php else: ?>
+                            <a class="btn-sm btn-success btn" href="Action.php?aksi=update&table=transaksi&primary=idtransaksi&key=<?php echo $e->idtransaksi; ?>&input[]=ACC&tb[]=status">ACC</a>
+                            <a class="btn-sm btn-warning btn" href="Action.php?aksi=update&table=transaksi&primary=idtransaksi&key=<?php echo $e->idtransaksi; ?>&input[]=Ditolak&tb[]=status">Tolak</a>
+                            <?php endif;?>
                         </td>
                     </tr>
                     <?php endforeach;?>
@@ -144,20 +130,17 @@
                     <div style="zoom:85%" class="card card-body ">
                         <div class="row">
                             <div class="form-grup col-12 mb-2 input-group-sm">
-                            <label class="form-control-label">Guru</label>
-                            <select :value="kd.nip"  class="form-control " name="input[]">
-                                <?php foreach ($data['guru'] as $k => $e): ?>
-
+                                <label class="form-control-label">Guru</label>
+                                <select :value="kd.nip" class="form-control " name="input[]">
+                                    <?php foreach ($data['guru'] as $k => $e): ?>
                                     <option value="<?php echo $e->nip; ?>">
                                         <?php echo $e->nip; ?> ||
                                         <?php echo $e->nama; ?>
                                     </option>
-
-                                <?php endforeach;?>
-                            </select>
-                            <input type="hidden" name="tb[]" value="nip">
-
-                        </div>
+                                    <?php endforeach;?>
+                                </select>
+                                <input type="hidden" name="tb[]" value="nip">
+                            </div>
                             <?php foreach ($data['transaksi.form'] as $isi): ?>
                             <?php if ($isi['name'] == 'idbarang'): ?>
                             <div class="form-grup col-12 mb-2 input-group-sm">

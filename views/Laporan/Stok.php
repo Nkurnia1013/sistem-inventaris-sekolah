@@ -5,7 +5,7 @@
             <div class="card-header card-header-primary">
                 <div class="d-flex  justify-content-between">
                     <h4 class="card-title ">Preview Laporan</h4>
-                    <button type="button" class="btn btn-outline-dark btn-sm  " onclick="$('#print22').print();">Catak</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm  " onclick="$('#print22').print();">Cetak</button>
                 </div>
             </div>
             <div class="" style="zoom:100%" id="print22">
@@ -14,7 +14,15 @@
                     <div class="col-1"></div>
                     <div class="col-10">
                         <br>
-                        <h4 class="text-center"><b><u>Laporan Stok Barang</u></b></h4>
+                        <h4 class="text-center"><b><u style="text-transform: uppercase;">Laporan Stok Barang </u></b></h4>
+                        <h5>
+                        <table class="table table-borderless" style="width: 20%">
+                            <tr>
+                                <td>Bulan</td>
+                                <td>: <?php echo Fungsi::$bulan[date('n')]; ?></td>
+                            </tr>
+                        </table>
+                        </h5>
                         <table style="zoom:100%" class="table card-table table-bordered p-2 table-vcenter" width="100%">
                             <thead class=" text-primary">
                                 <th>

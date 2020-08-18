@@ -29,7 +29,7 @@ $tb = 'tb[]';
 <div class="form-grup col-<?php echo $pnj; ?> mb-2 input-group-sm">
     <label class="form-control-label text-dark">
         <?php echo $label; ?></label>
-    <input :value="kd.<?php echo $name; ?>" maxlength="<?php echo $max; ?>" autocomplete=off type="<?php echo $type; ?>" <?php echo $red; ?> step="any" min="0"
+    <input :value="kd.<?php echo $name; ?>" maxlength="<?php echo $max; ?>" autocomplete=off type="<?php echo $type; ?>" <?php echo $red; ?> step="any" min="1"
     value="<?php echo $val; ?>"
     name="<?php echo $var; ?>" class="form-control">
     <input type="hidden" name="<?php echo $tb; ?>" value="<?php echo $name; ?>">

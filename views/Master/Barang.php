@@ -6,13 +6,14 @@
                 <form action="Action.php" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <?php foreach ($data['barang.form'] as $isi): ?>
-                        <?php if ($isi['name'] == 'level'): ?>
+                        <?php if ($isi['name'] == 'habisPakai'): ?>
                         <div class="form-grup col-12 mb-2 input-group-sm">
-                            <label class="form-control-label">Level</label>
-                            <select class="form-control multi" name="akses[]">
-                                <option value="Admin">Admin</option>
-                                <option value="Kepala Sekolah">Kepala Sekolah</option>
+                            <label class="form-control-label">Habis Pakai</label>
+                            <select class="form-control multi" name="input[]">
+                                <option value="Ya">Ya</option>
+                                <option value="Tidak">Tidak</option>
                             </select>
+                            <input type="hidden" name="tb[]" value="habisPakai">
                         </div>
                         <?php else: ?>
                         <?php include $komponen . '/Input.php';?>
@@ -33,7 +34,7 @@
             <table width="100%" class="text-wrap mb-0 tb table table-borderless table-striped table-hover ">
                 <thead class="">
                     <tr>
-                        <th class="w-1">#</th>
+                        <th class="w-1">No</th>
                         <?php foreach ($data['barang.form'] as $e): ?>
                         <?php if ($e['tb']): ?>
                         <th class="">
@@ -53,22 +54,40 @@
                         </td>
                         <?php foreach ($data['barang.form'] as $e1): ?>
                         <?php if ($e1['tb']): ?>
+                        <?php if ($e1['name'] == 'jatah'): ?>
+                        <td class="text-wrap">
+                             <?php if ($e->habisPakai == 'Ya'): ?>
+                            <?php echo $e->jatah; ?>
+                            <?php else: ?>
+                            -
+                            <?php endif;?>
+                        </td>
+                        <?php else: ?>
                         <td class="text-wrap">
                             <?php $b = $e1['name'];?>
                             <?php echo $e->$b; ?>
                         </td>
                         <?php endif;?>
+                        <?php endif;?>
                         <?php endforeach;?>
-                        <td><?php echo $e->stok; ?></td>
+                        <td>
+                            <?php if ($e->habisPakai == 'Ya'): ?>
+                            <?php echo $e->stok; ?>
+                            <?php else: ?>
+                            -
+                            <?php endif;?>
+                        </td>
                         <td class="text-right ">
-                           <span style="display: none" id="data-<?php echo $e->idbarang; ?>">
+                            <span style="display: none" id="data-<?php echo $e->idbarang; ?>">
                                 <?php echo json_encode($e); ?></span>
+                                <div class="d-flex">
                             <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->idbarang; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
                                 <i class="fa fa-edit"></i>
                             </a>
                             <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=barang&primary=idbarang&key=<?php echo $e->idbarang; ?>">
                                 <i class="fa fa-trash"></i>
                             </a>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach;?>
@@ -91,7 +110,18 @@
                     <div style="zoom:85%" class="card card-body ">
                         <div class="row">
                             <?php foreach ($data['barang.form'] as $isi): ?>
+                            <?php if ($isi['name'] == 'habisPakai'): ?>
+                            <div class="form-grup col-12 mb-2 input-group-sm">
+                                <label class="form-control-label">Habis Pakai</label>
+                                <select v-model="kd.habisPakai" class="form-control " name="input[]">
+                                    <option value="Ya">Ya</option>
+                                    <option value="Tidak">Tidak</option>
+                                </select>
+                                <input type="hidden" name="tb[]" value="habisPakai">
+                            </div>
+                            <?php else: ?>
                             <?php include $komponen . '/Up.php';?>
+                            <?php endif;?>
                             <?php endforeach;?>
                             <div class="modal-footer col-12  py-1">
                                 <input type="hidden" name="table" value="barang">

@@ -5,23 +5,16 @@
             <div class=" card-body ">
                 <form action="Action.php" method="post" enctype="multipart/form-data">
                     <div class="row">
-                        <?php foreach ($data['user.form'] as $isi): ?>
-                        <?php if ($isi['name'] == 'level'): ?>
-                        <div class="form-grup col-12 mb-2 input-group-sm">
-                            <label class="form-control-label">Level</label>
-                            <select name="input[]" class="form-control ">
-                                <option value="TU">TU</option>
-                                <option value="Kepala Sekolah">Kepala Sekolah</option>
-                            </select>
-                            <input type="hidden" name="tb[]" value="level">
-                        </div>
-                        <?php else: ?>
+                        <?php foreach ($data['barang.form'] as $isi): ?>
+
                         <?php include $komponen . '/Input.php';?>
-                        <?php endif;?>
                         <?php endforeach;?>
                         <div class="modal-footer col-12  py-1">
-                            <input type="hidden" name="table" value="user">
-                            <button type="submit" value="insert" name="aksi" class="btn btn-sm btn-primary">Tambah</button>
+                            <input type="hidden" name="table" value="barang">
+                            <input type="hidden" name="input[]" value="Tidak">
+                            <input type="hidden" name="tb[]" value="habisPakai">
+
+                            <button type="submit" name="aksi" value="insert" class="btn btn-sm btn-primary">Tambah</button>
                         </div>
                     </div>
                 </form>
@@ -35,7 +28,7 @@
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
-                        <?php foreach ($data['user.form'] as $e): ?>
+                        <?php foreach ($data['barang.form'] as $e): ?>
                         <?php if ($e['tb']): ?>
                         <th class="">
                             <?php echo $e['label']; ?>
@@ -46,28 +39,35 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['user'] as $v => $e): ?>
+                    <?php foreach ($data['barang'] as $v => $e): ?>
                     <tr>
                         <td>
                             <?php echo $v + 1; ?>
                         </td>
-                        <?php foreach ($data['user.form'] as $e1): ?>
+                        <?php foreach ($data['barang.form'] as $e1): ?>
                         <?php if ($e1['tb']): ?>
+                        <?php if ($e1['name'] == 'jatah'): ?>
+
+                        <?php else: ?>
                         <td class="text-wrap">
                             <?php $b = $e1['name'];?>
                             <?php echo $e->$b; ?>
                         </td>
                         <?php endif;?>
+                        <?php endif;?>
                         <?php endforeach;?>
+
                         <td class="text-right ">
-                            <span style="display: none" id="data-<?php echo $e->user; ?>">
+                            <span style="display: none" id="data-<?php echo $e->idbarang; ?>">
                                 <?php echo json_encode($e); ?></span>
-                            <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->user; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
+                                <div class="d-flex">
+                            <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->idbarang; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=user&primary=user&key=<?php echo $e->user; ?>">
+                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=barang&primary=idbarang&key=<?php echo $e->idbarang; ?>">
                                 <i class="fa fa-trash"></i>
                             </a>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach;?>
@@ -89,24 +89,24 @@
                 <div class="modal-body  " style="background: rgb(240, 241, 245)">
                     <div style="zoom:85%" class="card card-body ">
                         <div class="row">
-                            <?php foreach ($data['user.form'] as $isi): ?>
-                            <?php if ($isi['name'] == 'level'): ?>
+                            <?php foreach ($data['barang.form'] as $isi): ?>
+                            <?php if ($isi['name'] == 'habisPakai'): ?>
                             <div class="form-grup col-12 mb-2 input-group-sm">
-                                <label class="form-control-label">Level</label>
-                                <select v-model="kd.level" name="input[]" class="form-control ">
-                                    <option value="Admin">Admin</option>
-                                    <option value="Kepala Sekolah">Kepala Sekolah</option>
+                                <label class="form-control-label">Habis Pakai</label>
+                                <select v-model="kd.habisPakai" class="form-control " name="input[]">
+                                    <option value="Ya">Ya</option>
+                                    <option value="Tidak">Tidak</option>
                                 </select>
-                                <input type="hidden" name="tb[]" value="level">
+                                <input type="hidden" name="tb[]" value="habisPakai">
                             </div>
                             <?php else: ?>
                             <?php include $komponen . '/Up.php';?>
                             <?php endif;?>
                             <?php endforeach;?>
                             <div class="modal-footer col-12  py-1">
-                                <input type="hidden" name="table" value="user">
-                                <input type="hidden" name="primary" value="user">
-                                <input type="hidden" name="key" :value="kd.user">
+                                <input type="hidden" name="table" value="barang">
+                                <input type="hidden" name="primary" value="idbarang">
+                                <input type="hidden" name="key" :value="kd.idbarang">
                                 <button type="button" class="btn shadow-sm btn-sm btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="submit" name="aksi" value="update" class="btn shadow-sm btn-sm btn-info">Simpan</button>
                             </div>
