@@ -23,6 +23,6 @@ $Controller = new Controller($_REQUEST);
 $komponen = 'views/Komponen';
 $data = $Controller->Data;
 $Request = json_decode(json_encode($_REQUEST));
-
+$data['minta'] = collect(Crud::idupin()->mysqli2->table('detail_permintaan')->select()->join('transaksi_keluar', 'transaksi_keluar.idtransaksi', '=', 'detail_permintaan.idtransaksi')->join('guru', 'guru.nip', '=', 'transaksi_keluar.nip')->where('status', 'Menunggu')->where('nama', '!=', '')->get());
 include 'views/html.php';
 /* Start to develop here. Best regards https://php-download.com/ */

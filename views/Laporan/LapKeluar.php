@@ -29,39 +29,39 @@
                                     <th class="w-1">No</th>
                                     <th class="w-1">Tanggal</th>
                                     <th class="w-1">Oleh</th>
-                                    <?php foreach ($data[$table . '.form'] as $e): ?>
-                                    <?php if ($e['tb']): ?>
-                                    <th class="">
-                                        <?php echo $e['label']; ?>
-                                    </th>
-                                    <?php endif;?>
-                                    <?php endforeach;?>
+                                    <th>Detail</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($data[$table] as $v => $e): ?>
+                                <?php foreach ($data[$table]->values() as $v => $e): ?>
                                 <tr>
                                     <td>
                                         <?php echo $v + 1; ?>
                                     </td>
-
                                     <td>
                                         <?php echo date_format(date_create($e->tgl), 'd/m/Y'); ?>
                                     </td>
-                                     <td>
+                                    <td>
                                         <?php echo $e->nama; ?>
                                         <div>NIP:
                                             <?php echo $e->nip; ?>
                                         </div>
                                     </td>
-                                    <?php foreach ($data[$table . '.form'] as $e1): ?>
-                                    <?php if ($e1['tb']): ?>
-                                    <td class="text-wrap">
-                                        <?php $b = $e1['name'];?>
-                                        <?php echo $e->$b; ?>
+                                    <td>
+                                        <?php foreach ($e->detail as $k2): ?>
+                                        <ul>
+                                            <li>
+                                                <span>
+                                                    <div>
+                                                        <?php echo $k2->nama_barang; ?><strong> [<?php echo $k2->qty; ?> <?php echo $k2->satuan; ?>]</strong>
+                                                    </div>
+
+                                                </span>
+
+                                            </li>
+                                        </ul>
+                                        <?php endforeach;?>
                                     </td>
-                                    <?php endif;?>
-                                    <?php endforeach;?>
                                 </tr>
                                 <?php endforeach;?>
                             </tbody>

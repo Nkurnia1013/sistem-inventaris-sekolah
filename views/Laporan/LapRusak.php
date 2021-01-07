@@ -17,19 +17,20 @@
                     <div class="col-1"></div>
                     <div class="col-10">
                         <br>
-                        <h4 class="text-center"><b><u style="text-transform: uppercase;">Laporan Inventaris</u></b></h4>
+                        <h4 class="text-center"><b><u style="text-transform: uppercase;"><?php echo $data['judul']; ?></u></b></h4>
                         <br>
                         <br>
                         <br>
- <p class="p-0 m-0"><strong>Pada <?php if ($data['Request']->jenis == 'bulanan'): ?> <?php echo Fungsi::$bulan[$data['Request']->tgl[0]]; ?> <?php endif;?> <?php echo $data['Request']->tgl[1]; ?></strong></strong></p>
+
                         <?php $table = 'transaksi';?>
                         <?php $primary = 'idtransaksi';?>
-                        <table width="100%" class="text-wrap mb-0  table table-bordered table-striped table-hover ">
+ <p class="p-0 m-0"><strong>Pada <?php if ($data['Request']->jenis == 'bulanan'): ?> <?php echo Fungsi::$bulan[$data['Request']->tgl[0]]; ?> <?php endif;?> <?php echo $data['Request']->tgl[1]; ?></strong></strong></p>
+
+                       <table width="100%" class="text-wrap mb-0  table table-bordered table-striped table-hover ">
                             <thead class="">
                                 <tr>
                                     <th rowspan="2" class="w-1">No</th>
                                     <th rowspan="2">Ruangan</th>
-
                                     <?php foreach ($data[$data['table'] . '.form'] as $e): ?>
                                     <?php if ($e['tb']): ?>
                                     <th rowspan="2" class="">
@@ -38,7 +39,7 @@
                                     <?php endif;?>
                                     <?php endforeach;?>
                                     <th class="text-center" colspan="3">Kondisi Barang</th>
-                                    <th rowspan="2" class="w-1">Sumber Dana</th>
+                                    <th rowspan="2" class="w-1">Keterangan</th>
                                 </tr>
                                 <tr>
                                     <th class="text-center">Baik</th>
@@ -47,12 +48,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($data[$data['table']]->where('jumlah', '>', 0)->values() as $v => $e): ?>
+                                <?php foreach ($data[$data['table']]->values() as $v => $e): ?>
                                 <tr>
                                     <td>
                                         <?php echo $v + 1; ?>
                                     </td>
-                                     <td>
+                                       <td>
                             <?php echo $e->ruangan; ?>
                             <div>Penanggung Jawab: <strong><?php echo $e->namapj; ?></strong></div>
                         </td>
@@ -80,7 +81,7 @@
                                         <?php endif;?>
                                     </td>
                                     <td>
-                                        <?php echo $e->sumber_dana; ?>
+                                        <?php echo $e->keterangan; ?>
                                     </td>
                                 </tr>
                                 <?php endforeach;?>
@@ -91,9 +92,8 @@
                     </div>
                 </div>
                 <?php include $komponen . '/Ttd.php';?>
-
             </div>
         </div>
     </div>
-    <?php endif;?>
+<?php endif;?>
 </div>

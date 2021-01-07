@@ -31,7 +31,7 @@
     <div class="col-12 col-lg-9 mb-2">
         <div class="card rounded shadow" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Data</h6>
-            <table width="100%" class="text-wrap mb-0 tb table table-borderless table-striped table-hover ">
+            <table width="100%" class="text-wrap mb-0 tb table table-bordered table-striped table-hover ">
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
@@ -42,11 +42,11 @@
                         </th>
                         <?php endif;?>
                         <?php endforeach;?>
-                        <th data-priority="1"></th>
+                        <th data-priority="1">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['user'] as $v => $e): ?>
+                    <?php foreach ($data['user']->values() as $v => $e): ?>
                     <tr>
                         <td>
                             <?php echo $v + 1; ?>
@@ -94,7 +94,7 @@
                             <div class="form-grup col-12 mb-2 input-group-sm">
                                 <label class="form-control-label">Level</label>
                                 <select v-model="kd.level" name="input[]" class="form-control ">
-                                    <option value="Admin">Admin</option>
+                                    <option value="TU">TU</option>
                                     <option value="Kepala Sekolah">Kepala Sekolah</option>
                                 </select>
                                 <input type="hidden" name="tb[]" value="level">

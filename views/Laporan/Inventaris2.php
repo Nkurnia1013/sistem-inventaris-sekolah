@@ -1,6 +1,7 @@
 <div class="row " style="zoom:85%">
     <?php include $komponen . '/Filter.php';?>
     <?php if (isset($data['Request']->tgl)): ?>
+
     <div class="col-lg-12 col-12 mt-3">
         <div class="card" style="zoom:85%">
             <div class="card-header card-header-primary">
@@ -15,40 +16,30 @@
                     <div class="col-1"></div>
                     <div class="col-10">
                         <br>
-                        <h4 class="text-center"><b><u style="text-transform: uppercase;">Laporan Barang Masuk</u></b></h4>
-                        <p class="p-0 m-0"><strong>Pada
-                                <?php if ($data['Request']->jenis == 'bulanan'): ?>
-                                <?php echo Fungsi::$bulan[$data['Request']->tgl[0]]; ?>
+                        <h4 class="text-center"><b><u style="text-transform: uppercase;">Laporan Inventaris</u></b></h4>
+                        <p class="p-0 m-0"><strong>Pada <?php if ($data['Request']->jenis == 'bulanan'): ?> <?php echo Fungsi::$bulan[$data['Request']->tgl[0]]; ?> <?php endif;?> <?php echo $data['Request']->tgl[1]; ?></strong></strong></p>
+                        <table style="zoom:100%" class="table card-table table-bordered p-2 table-vcenter" width="100%">
+                            <thead class=" text-primary">
+                                <th>
+                                    #
+                                </th>
+                                <?php foreach ($data['barang.form'] as $e): ?>
+                                <?php if ($e['tb']): ?>
+                                <th class="">
+                                    <?php echo $e['label']; ?>
+                                </th>
                                 <?php endif;?>
-                                <?php echo $data['Request']->tgl[1]; ?></strong></strong></p>
-                                 <?php $table = 'transaksi';?>
-                                <?php $primary = 'idtransaksi';?>
-                        <table width="100%" class="text-wrap mb-0  table table-bordered table-striped table-hover ">
-                            <thead class="">
-                                <tr>
-                                    <th class="w-1">No</th>
-                                    <th class="w-1">Tanggal</th>
-
-                                    <?php foreach ($data[$table . '.form'] as $e): ?>
-                                    <?php if ($e['tb']): ?>
-                                    <th class="">
-                                        <?php echo $e['label']; ?>
-                                    </th>
-                                    <?php endif;?>
-                                    <?php endforeach;?>
-                                </tr>
+                                <?php endforeach;?>
+                                <th>Masuk</th>
+                                <th>Keluar</th>
                             </thead>
                             <tbody>
-
-                                <?php foreach ($data[$table]->values() as $v => $e): ?>
+                                <?php foreach ($data['barang']->values() as $v => $e): ?>
                                 <tr>
                                     <td>
                                         <?php echo $v + 1; ?>
                                     </td>
-                                    <td>
-                                        <?php echo date_format(date_create($e->tgl), 'd/m/Y'); ?>
-                                    </td>
-                                    <?php foreach ($data[$table . '.form'] as $e1): ?>
+                                    <?php foreach ($data['barang.form'] as $e1): ?>
                                     <?php if ($e1['tb']): ?>
                                     <td class="text-wrap">
                                         <?php $b = $e1['name'];?>
@@ -56,9 +47,11 @@
                                     </td>
                                     <?php endif;?>
                                     <?php endforeach;?>
+                                    <td><?php echo $data['transaksi_masuk']->where('idbarang', $e->idbarang)->sum('qty'); ?></td>
+                                    <td><?php echo $data['transaksi_keluar']->where('idbarang', $e->idbarang)->sum('qty'); ?></td>
+
                                 </tr>
                                 <?php endforeach;?>
-                            </tbody>
                         </table>
                     </div>
                     <div class="col-1">
@@ -69,4 +62,5 @@
         </div>
     </div>
     <?php endif;?>
+
 </div>

@@ -25,9 +25,8 @@
             <tr>
                 <td class="text-left">
                     <br>
-
-                    <hr class="my-0 py-0 border-dark border">
                     Seska Widiyanti, S,E
+                    <hr class="my-0 py-0 border-dark border">
                 </td>
             </tr>
         </table>
@@ -55,8 +54,8 @@
             <tr>
                 <td class="text-left">
                     <br>
+                    Tanti Nurcaini
                     <hr class="my-0 py-0 border-dark border">
-                    Tata Usaha
                 </td>
             </tr>
         </table>

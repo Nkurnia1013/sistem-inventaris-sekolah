@@ -86,5 +86,11 @@ class Crud
         }
         return collect($hasil);
     }
+    public function auto($tb)
+    {
+        $tes = $this->raw("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '" . $this->dbname . "' AND TABLE_NAME = '" . $tb . "'")->result;
+
+        return collect($tes);
+    }
 
 }

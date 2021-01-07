@@ -31,7 +31,7 @@
     <div class="col-12 col-lg-9 mb-2">
         <div class="card rounded shadow" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Data</h6>
-            <table width="100%" class="text-wrap mb-0 tb table table-borderless table-striped table-hover ">
+            <table width="100%" class="text-wrap mb-0 tb table table-bordered table-striped table-hover ">
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
@@ -43,11 +43,11 @@
                         <?php endif;?>
                         <?php endforeach;?>
                         <th>Stok</th>
-                        <th data-priority="1"></th>
+                        <th data-priority="1">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['barang'] as $v => $e): ?>
+                    <?php foreach ($data['barang']->values() as $v => $e): ?>
                     <tr>
                         <td>
                             <?php echo $v + 1; ?>

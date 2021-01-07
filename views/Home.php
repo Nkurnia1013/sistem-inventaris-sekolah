@@ -3,7 +3,7 @@
         <div class="card rounded shadow mb-2" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Visi </h6>
             <div class="jumbotron">
-                <h1 class="text-center h2">“Melahirkan generasi yang Qur’an dan memiliki awasan global” </h1>
+                <h1 class="text-center h2">“Melahirkan Generasi yang Qur’an dan Memiliki Wawasan global” </h1>
             </div>
         </div>
     </div>
@@ -13,12 +13,12 @@
             <div class="jumbotron p-3 ">
                 <div class="d-flex">
                     <span class="mb-0 px-3 mb-2 py-2 shadow text-wrap bg-white rounded-pill ">
-                        1. Menemikan, mengembangkan dan melatih bebrbagai kecerdasan peserta didik.
+                        1. Menemukan, mengembangkan dan melatih bebrbagai kecerdasan peserta didik.
                     </span>
                 </div>
                 <div class="d-flex">
                     <span class="mb-0 px-3 mb-2 py-2 shadow text-wrap bg-white rounded-pill ">
-                        2. Menanamkan nilai-nilai al-Qur’an dengan membaca ,menghafal, memahami dan mengamalkannya.
+                        2.Nilai-nilai al-Qur'an dengan membaca, memahami dan mengamalkannya.
                     </span>
                 </div>
                 <div class="d-flex">
@@ -28,11 +28,23 @@
                 </div>
                 <div class="d-flex">
                     <span class="mb-0 px-3 mb-2 py-2 shadow text-wrap bg-white rounded-pill ">
-                        4. Menjadikan bahasa inggris sebagai bahasa kounikasi sehari-hari.
+                        4. Menjadikan bahasa inggris sebagai bahasa komunikasi sehari-hari.
                     </span>
                 </div>
+				<div class="d-flex">
+                    <span class="mb-0 px-3 mb-2 py-2 shadow text-wrap bg-white rounded-pill ">
+                        5. Meningkatkan kopetensi guru dalam peningkatan mutu.
+                    </span>
             </div>
+			<div class="d-flex">
+                    <span class="mb-0 px-3 mb-2 py-2 shadow text-wrap bg-white rounded-pill ">
+                        6. Meningkatkan kedisiplinan pada seluruh warga sekolah.
+                    </span>
         </div>
+		<div class="d-flex">
+                    <span class="mb-0 px-3 mb-2 py-2 shadow text-wrap bg-white rounded-pill ">
+                        7. Meningkatkan suasana lingkungan sekolah yang , aman, nyaman, dan penuh kekeluargaan.
+                    </span>
     </div>
     </div>
     <?php /* ?>

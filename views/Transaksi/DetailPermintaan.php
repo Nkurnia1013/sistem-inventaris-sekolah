@@ -1,24 +1,11 @@
 <div class="row ">
-    <div class="form-grup col-12 mb-2 input-group-sm">
-        <form>
-            <label class="form-control-label">Tanggal Transaksi</label>
-            <div class="input-group mb-3">
-                <input type="date" class="form-control" value="<?php echo $data['tgl']; ?>" name="tgl" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-                <input type="hidden" name="hal" value="<?php echo $_REQUEST['hal']; ?>">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Set Tanggal</button>
-                </div>
-            </div>
-        </form>
-    </div>
+    <?php if ($data['transaksi_keluar']->status == 'Proses'): ?>
     <div class="col-12 col-lg-3 mb-2">
         <div class="card rounded shadow" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Form Input</h6>
             <div class=" card-body ">
                 <form action="Action.php" method="post" enctype="multipart/form-data">
                     <div class="row">
-                        <?php foreach ($data[$data['table'] . '.form'] as $isi): ?>
-                        <?php if ($isi['name'] == 'idbarang'): ?>
                         <div class="form-grup col-12 mb-2 input-group-sm">
                             <label class="form-control-label">Barang</label>
                             <select class="form-control " id="barang" onclick="app.barang=$('#barang option:selected').data('barang')" name="input[]">
@@ -42,23 +29,19 @@
                             <label class="form-control-label">Satuan</label>
                             <input type="text" readonly="" :value="barang.satuan" class="form-control">
                         </div>
-                        <?php elseif ($isi['name'] == 'qty'): ?>
                         <div class="form-grup col-12 mb-2 input-group-sm">
-                            <label class="form-control-label">
-                                <?php echo $isi['label']; ?></label>
-                            <div class="input-group">
-                                <input maxlength="9" type="text" onkeypress="return onlyNumberKey(event)" autocomplete=off class="form-control" aria-describedby="satuan" name="input[]">
+                            <label class="form-control-label">Qty</label>
+                            <div class="input-group ">
+                                <input maxlength="9" type="text" autocomplete=off id="qty" class="form-control" aria-describedby="satuan" name="input[]">
                             </div>
-                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
+                            <input type="hidden" name="tb[]" value="qty">
                         </div>
-                        <?php else: ?>
-                        <?php include $komponen . '/Input.php';?>
-                        <?php endif;?>
-                        <?php endforeach;?>
                         <div class="modal-footer col-12  py-1">
-                            <input type="hidden" name="input[]" value="<?php echo $data['tgl']; ?>">
-                            <input type="hidden" name="tb[]" value="tgl">
-                            <input type="hidden" name="table" value="<?php echo $data['table']; ?>">
+                            <input type="hidden" name="input[]" value="<?php echo $data['transaksi_keluar']->idtransaksi; ?>">
+                            <input type="hidden" name="tb[]" value="idtransaksi">
+                            <input type="hidden" name="cek" value="keluar">
+                            <input type="hidden" name="idguru" value="<?php echo $data['transaksi_keluar']->idguru; ?>">
+                            <input type="hidden" name="table" value="detail_permintaan">
                             <button type="submit" name="aksi" value="insert" class="btn btn-sm btn-primary">Tambah</button>
                         </div>
                     </div>
@@ -66,60 +49,61 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-lg-9 mb-2">
+    <?php endif;?>
+    <div class="col mb-2">
         <div class="card rounded shadow" style="zoom:85%">
-            <h6 class="text-dark ml-2 mt-1 pt-1">Data <small><strong><small>
-                            <?php echo $data['tgl']; ?></small></strong></small></h6>
+            <div class="d-flex justify-content-between">
+                <h6 class="text-dark ml-2 mt-1 pt-1">Data </h6>
+                <span class="m-3">
+                    <?php if ($data['transaksi_keluar']->status == 'Proses'): ?>
+                    <a href="Action.php?table=transaksi_keluar&aksi=update&input[]=Menunggu&tb[]=status&input[]=<?php echo date('Y-m-d'); ?>&tb[]=tgl&primary=idtransaksi&key=<?php echo $data['transaksi_keluar']->idtransaksi; ?>&link=index.php?hal=Permintaan" class="btn btn-sm btn-primary <?php if ($data['transaksi_keluar']->detail_permintaan->isEmpty()): ?> disabled <?php endif;?>">Kirim Permintaan Ke TU</a>
+                    <?php endif;?>
+                </span>
+            </div>
             <table width="100%" class="text-wrap mb-0 tb table table-bordered table-striped table-hover ">
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
-                        <?php foreach ($data[$data['table'] . '.form'] as $e): ?>
-                        <?php if ($e['tb']): ?>
-                        <th class="">
-                            <?php echo $e['label']; ?>
-                        </th>
-                        <?php endif;?>
-                        <?php endforeach;?>
+                        <th>Barang</th>
+                        <th>Qty</th>
+                        <?php if ($data['transaksi_keluar']->status == 'Proses'): ?>
                         <th data-priority="1">Aksi</th>
+                        <?php endif;?>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $table = 'transaksi_masuk';?>
-                    <?php $primary = 'idtransaksi';?>
-                    <?php foreach ($data[$data['table']]->values() as $v => $e): ?>
+                    <?php $no = 1;foreach ($data['transaksi_keluar']->detail_permintaan as $k): ?>
                     <tr>
                         <td>
-                            <?php echo $v + 1; ?>
+                            <?php echo $no++; ?>
                         </td>
-                        <?php foreach ($data[$data['table'] . '.form'] as $e1): ?>
-                        <?php if ($e1['tb']): ?>
-                        <td class="text-wrap">
-                            <?php $b = $e1['name'];?>
-                            <?php if ($b == 'qty'): ?>
-                            <?php echo $e->$b; ?>
-                            <?php echo $e->satuan; ?>
-                            <?php elseif ($b == 'nama_barang'): ?>
-                            <?php echo $e->$b; ?> <strong>[
-                                <?php echo $e->idbarang; ?>]</strong>
-                            <div><small>Merk :<span class="text-muted">
-                                        <?php echo $e->merk; ?></span></small></div>
-                            <?php else: ?>
-                            <?php echo $e->$b; ?>
-                            <?php endif;?>
+                        <td>
+                            <div>
+                                <?php echo $k->nama_barang; ?>
+                                <strong>[
+                                    <?php echo $e->idbarang; ?>]</strong>
+                                <div><small>Merk :<span class="text-muted">
+                                            <?php echo $e->merk; ?></span></small></div>
+                            </div>
+                        </td>
+                        <td>
+                            <?php echo $k->qty; ?>
+                            <?php echo $k->satuan; ?>
+                        </td>
+                        <?php if ($data['transaksi_keluar']->status == 'Proses'): ?>
+                        <td>
+                            <span style="display: none" id="data-<?php echo $k->iddetail; ?>">
+                                <?php echo json_encode($k); ?></span>
+                            <div class="d-flex">
+                                <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $k->iddetail; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=detail_permintaan&primary=iddetail&key=<?php echo $k->iddetail; ?>">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </div>
                         </td>
                         <?php endif;?>
-                        <?php endforeach;?>
-                        <td class="text-right ">
-                            <span style="display: none" id="data-<?php echo $e->$primary; ?>">
-                                <?php echo json_encode($e); ?></span>
-                            <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->$primary; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=<?php echo $data['table']; ?>&primary=<?php echo $primary; ?>&key=<?php echo $e->$primary; ?>">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                        </td>
                     </tr>
                     <?php endforeach;?>
                 </tbody>
@@ -140,14 +124,11 @@
                 <div class="modal-body  " style="background: rgb(240, 241, 245)">
                     <div style="zoom:85%" class="card card-body ">
                         <div class="row">
-                            <?php foreach ($data[$data['table'] . '.form'] as $isi): ?>
-                            <?php if ($isi['name'] == 'idbarang'): ?>
-
-                             <div class="form-grup col-12 mb-2 input-group-sm" >
+                            <div class="form-grup col-12 mb-2 input-group-sm">
                                 <label class="form-control-label">Barang</label>
                                 <input type="text" readonly="" :value="kd.nama_barang" class="form-control">
                             </div>
-                            <div class="form-grup col-12 mb-2 input-group-sm" >
+                            <div class="form-grup col-12 mb-2 input-group-sm">
                                 <label class="form-control-label">ID Barang</label>
                                 <input type="text" readonly="" :value="kd.idbarang" class="form-control">
                             </div>
@@ -155,18 +136,23 @@
                                 <label class="form-control-label">Merk</label>
                                 <input type="text" readonly="" :value="kd.merk" class="form-control">
                             </div>
-                            <div class="form-grup col-12 mb-2 input-group-sm" >
+                            <div class="form-grup col-12 mb-2 input-group-sm">
                                 <label class="form-control-label">Satuan</label>
                                 <input type="text" readonly="" :value="kd.satuan" class="form-control">
                             </div>
-                            <?php else: ?>
-                            <?php include $komponen . '/Up.php';?>
-                            <?php endif;?>
-                            <?php endforeach;?>
+                            <div class="form-grup col-12 mb-2 input-group-sm">
+                                <label class="form-control-label">Qty</label>
+                                <div class="input-group mb-3">
+                                    <input maxlength="9" type="text" autocomplete=off class="form-control" id="qty2" :value="kd.qty" aria-describedby="satuan1" name="input[]">
+                                    <div class="input-group-append">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="tb[]" value="qty">
+                            </div>
                             <div class="modal-footer col-12  py-1">
-                                <input type="hidden" name="table" value="transaksi_masuk">
-                                <input type="hidden" name="primary" value="idtransaksi">
-                                <input type="hidden" name="key" :value="kd.idtransaksi">
+                                <input type="hidden" name="table" value="detail_permintaan">
+                                <input type="hidden" name="primary" value="iddetail">
+                                <input type="hidden" name="key" :value="kd.iddetail">
                                 <button type="button" class="btn shadow-sm btn-sm btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="submit" name="aksi" value="update" class="btn shadow-sm btn-sm btn-info">Simpan</button>
                             </div>

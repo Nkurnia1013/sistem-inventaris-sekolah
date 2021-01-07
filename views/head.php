@@ -4,8 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./mine/bootstrap.min.css" >
-    <link rel="stylesheet" href="./mine/animate.min.css" />
+
     <link rel="stylesheet" href="./mine/simplebar.css" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" />
     <title><?php echo $data['judul']; ?></title>
     <style type="text/css">

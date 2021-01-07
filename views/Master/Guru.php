@@ -6,8 +6,28 @@
                 <form action="Action.php" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <?php foreach ($data['guru.form'] as $isi): ?>
+                        <?php if ($isi['name'] == 'status_guru'): ?>
+                        <div class="form-grup col-12 mb-2 input-group-sm">
+                            <label class="form-control-label"><?php echo $isi['label']; ?></label>
+                            <div class="d-flex">
+                                <span class="mx-1"> <input required="" type="radio" class="ml-1" name="input[]" value="Wali Kelas">Wali Kelas</span>
+                                <span class="mx-1"> <input required="" type="radio" class="ml-1" name="input[]" value="Guru Mapel">Guru Mapel</span>
+                            </div>
+                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
+                        </div>
+                        <?php elseif ($isi['name'] == 'status_kawin'): ?>
+                            <div class="form-grup col-12 mb-2 input-group-sm">
+                            <label class="form-control-label"><?php echo $isi['label']; ?></label>
+                            <select name="input[]" class="form-control">
+                                <option value="Sudah Kawin">Sudah Kawin</option>
+                                <option value="Lajang">Lajang</option>
+                            </select>
 
+                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
+                        </div>
+                        <?php else: ?>
                         <?php include $komponen . '/Input.php';?>
+                        <?php endif;?>
                         <?php endforeach;?>
                         <div class="modal-footer col-12  py-1">
                             <input type="hidden" name="table" value="guru">
@@ -21,7 +41,7 @@
     <div class="col-12 col-lg-9 mb-2">
         <div class="card rounded shadow" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Data</h6>
-            <table width="100%" class="text-wrap mb-0 tb table table-borderless table-striped table-hover ">
+            <table width="100%" class="text-wrap mb-0 tb table table-bordered table-striped table-hover ">
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
@@ -32,11 +52,11 @@
                         </th>
                         <?php endif;?>
                         <?php endforeach;?>
-                        <th data-priority="1"></th>
+                        <th data-priority="1">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['guru'] as $v => $e): ?>
+                    <?php foreach ($data['guru']->values() as $v => $e): ?>
                     <tr>
                         <td>
                             <?php echo $v + 1; ?>
@@ -55,7 +75,7 @@
                             <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->nip; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=guru&primary=guru&key=<?php echo $e->nip; ?>">
+                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=guru&primary=nip&key=<?php echo $e->nip; ?>">
                                 <i class="fa fa-trash"></i>
                             </a>
                         </td>
@@ -80,16 +100,26 @@
                     <div style="zoom:85%" class="card card-body ">
                         <div class="row">
                             <?php foreach ($data['guru.form'] as $isi): ?>
-                            <?php if ($isi['name'] == 'level'): ?>
+                            <?php if ($isi['name'] == 'status_guru'): ?>
                             <div class="form-grup col-12 mb-2 input-group-sm">
                                 <label class="form-control-label">Level</label>
-                                <select v-model="kd.level" name="input[]" class="form-control ">
-                                    <option value="Admin">Admin</option>
-                                    <option value="Kepala Sekolah">Kepala Sekolah</option>
-                                </select>
-                                <input type="hidden" name="tb[]" value="level">
+                                <div class="d-flex">
+                                    <span class="mx-1"><input required=""  type="radio" v-model="kd.<?php echo $isi['name']; ?>" name="input[]" value="Wali Kelas">Wali Kelas</span>
+                                    <span class="mx-1"><input required=""  type="radio" v-model="kd.<?php echo $isi['name']; ?>" name="input[]" value="Guru Mapel">Guru Mapel</span>
+                                </div>
+                                <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
                             </div>
+                             <?php elseif ($isi['name'] == 'status_kawin'): ?>
+                            <div class="form-grup col-12 mb-2 input-group-sm">
+                            <label class="form-control-label"><?php echo $isi['label']; ?></label>
+                              <select name="input[]" :value="kd.<?php echo $isi['name']; ?>" class="form-control">
+                                <option value="Sudah Kawin">Sudah Kawin</option>
+                                <option value="Lajang">Lajang</option>
+                            </select>
+                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
+                        </div>
                             <?php else: ?>
+
                             <?php include $komponen . '/Up.php';?>
                             <?php endif;?>
                             <?php endforeach;?>

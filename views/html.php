@@ -19,7 +19,7 @@
                                                 <?php echo $data['induk']; ?></a></li>
                                         <?php endif;?>
                                         <li class="breadcrumb-item active" aria-current="page">
-                                            <?php echo $data['judul']; ?>
+                                            <div><i class="fa <?php echo $data['icon']; ?>"></i>  <?php echo $data['judul']; ?></div>
                                         </li>
                                     </ol>
                                 </nav>
@@ -39,7 +39,7 @@
     $(document).ready(function() {
 
 
-
+    app.barang=$('#barang option:selected').data('barang');
         //app.getall();
 
 
@@ -52,6 +52,8 @@
         el: '.appx',
         data: {
             kd: null,
+            barang: null,
+            barang2: null,
 
         },
 

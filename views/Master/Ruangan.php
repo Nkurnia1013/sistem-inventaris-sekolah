@@ -6,8 +6,21 @@
                 <form action="Action.php" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <?php foreach ($data['ruangan.form'] as $isi): ?>
-
+                        <?php if ($isi['name'] == 'penanggung_jawab'): ?>
+                        <div class="form-grup col-12 mb-2 input-group-sm">
+                            <label class="form-control-label">Penanggung Jawab</label>
+                            <select class="form-control " required name="input[]">
+                                <?php foreach ($data['guru'] as $k => $e): ?>
+                                <option value="<?php echo $e->nip; ?>">
+                                    <?php echo $e->nama; ?>
+                                </option>
+                                <?php endforeach;?>
+                            </select>
+                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
+                        </div>
+                        <?php else: ?>
                         <?php include $komponen . '/Input.php';?>
+                        <?php endif;?>
                         <?php endforeach;?>
                         <div class="modal-footer col-12  py-1">
                             <input type="hidden" name="table" value="ruangan">
@@ -21,33 +34,42 @@
     <div class="col-12 col-lg-9 mb-2">
         <div class="card rounded shadow" style="zoom:85%">
             <h6 class="text-dark ml-2 mt-1 pt-1">Data</h6>
-            <table width="100%" class="text-wrap mb-0 tb table table-borderless table-striped table-hover ">
+            <table width="100%" class="text-wrap mb-0 tb table table-bordered table-striped table-hover ">
                 <thead class="">
                     <tr>
                         <th class="w-1">No</th>
+                        <th>ID Ruangan</th>
+
                         <th>Ruangan</th>
-                        <th data-priority="1"></th>
+                        <th>Penanggung Jawab</th>
+                        <th data-priority="1">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['ruangan'] as $v => $e): ?>
+                    <?php foreach ($data['ruangan']->values() as $v => $e): ?>
                     <tr>
                         <td>
                             <?php echo $v + 1; ?>
                         </td>
-                        <td><?php echo $e->ruangan; ?></td>
-
-
+                          <td>
+                            <?php echo $e->idruangan; ?>
+                        </td>
+                        <td>
+                            <?php echo $e->ruangan; ?>
+                        </td>
+                        <td>
+                            <?php echo $e->nama; ?>
+                        </td>
                         <td class="text-right ">
                             <span style="display: none" id="data-<?php echo $e->idruangan; ?>">
                                 <?php echo json_encode($e); ?></span>
-                                <div class="d-flex">
-                            <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->idruangan; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=ruangan&primary=idruangan&key=<?php echo $e->idruangan; ?>">
-                                <i class="fa fa-trash"></i>
-                            </a>
+                            <div class="d-flex">
+                                <a class="mr-1 text-info" onclick="app.kd=JSON.parse($('#data-<?php echo $e->idruangan; ?>').html())" data-toggle="modal" data-target="#modal-edit" href="javascript:void(0)">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <a class=" text-danger" onclick="return confirm('Apakah anda yakin ingin hapus data ini?');" href="Action.php?aksi=delete&table=ruangan&primary=idruangan&key=<?php echo $e->idruangan; ?>">
+                                    <i class="fa fa-trash"></i>
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -71,7 +93,21 @@
                     <div style="zoom:85%" class="card card-body ">
                         <div class="row">
                             <?php foreach ($data['ruangan.form'] as $isi): ?>
+                                 <?php if ($isi['name'] == 'penanggung_jawab'): ?>
+                        <div class="form-grup col-12 mb-2 input-group-sm">
+                            <label class="form-control-label">Penanggung Jawab</label>
+                            <select class="form-control " required name="input[]">
+                                <?php foreach ($data['guru'] as $k => $e): ?>
+                                <option value="<?php echo $e->nip; ?>">
+                                    <?php echo $e->nama; ?>
+                                </option>
+                                <?php endforeach;?>
+                            </select>
+                            <input type="hidden" name="tb[]" value="<?php echo $isi['name']; ?>">
+                        </div>
+                        <?php else: ?>
                             <?php include $komponen . '/Up.php';?>
+                        <?php endif;?>
                             <?php endforeach;?>
                             <div class="modal-footer col-12  py-1">
                                 <input type="hidden" name="table" value="ruangan">
